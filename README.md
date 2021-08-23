@@ -1,14 +1,19 @@
 # kforth
-A Variant of the Forth Programming Language implemented in Kotlin
+A variant of the Forth Programming Language implemented in Kotlin
 
 ## Aims
 Learn about Forth and Forth programming by tinkering with my own implementation of it.
 
 ## Todos
+- [ ] Flexible output mechanism
+- [ ] Tests for all builtin words
+- [ ] Implement extension mechanism for additional builtin words
 - [ ] Kotlin FFI
-- [ ] Use FFI to cover string handling
+- [ ] Try to use FFI for string handling
+- [ ] Try to use http://turboforth.net/resources/string_library.html for string handling
 - [ ] Add missing words from eForth
-- [ ] Get eForth Examples to run
+- [ ] Get ooeForth204 examples to run
+- [ ] Look at https://github.com/zeroflag/punyforth for inspiration
 
 ## Thanks
 This implementation was inspired by the following implementations:
