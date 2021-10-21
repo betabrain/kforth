@@ -1,0 +1,5 @@
+package kforth
+
+fun main() {
+
+}

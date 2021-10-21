@@ -2,7 +2,7 @@ package kforth
 
 import java.util.*
 
-class KForthAlpha {
+class Alpha {
   // Words
   private val dict: MutableList<Pair<String, Int>> = mutableListOf()
   private val builtins: MutableMap<Int, () -> Unit> = mutableMapOf()
@@ -236,6 +236,6 @@ class KForthAlpha {
 }
 
 fun main() {
-  val kForthAlpha = KForthAlpha()
-  kForthAlpha.repl()
+  val alpha = Alpha()
+  alpha.repl()
 }
