@@ -1,15 +1,18 @@
 plugins {
-  kotlin("jvm") version "1.5.21"
+  kotlin("jvm") version "1.5.31"
+  java
   application
   idea
 }
 
 repositories {
   mavenCentral()
+  google()
 }
 
 dependencies {
   implementation(kotlin("stdlib"))
+  implementation("com.github.petitparser:petitparser:2.3.1")
   testImplementation(kotlin("test"))
 }
 
