@@ -1,4 +1,4 @@
-package kforth
+package kforth.vm
 
 import kforth.support.Fraction
 

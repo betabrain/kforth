@@ -1,4 +1,4 @@
-package kforth
+package kforth.interpreter
 
 import java.util.*
 
