@@ -5,71 +5,48 @@ import java.math.BigInteger
 /**
  * Fraction class.
  */
-class Fraction(numerator: BigInteger, denominator: BigInteger): Number(), Comparable<Fraction> {
+class Fraction(numerator: BigInteger = BigInteger.ZERO, denominator: BigInteger = BigInteger.ONE) :
+    Comparable<Fraction> {
 
-    private val numerator = if(denominator.signum() == -1) { - numerator } else { numerator }
+    constructor(numerator: Int, denominator: Int = 1) : this(
+        numerator.toBigInteger(),
+        denominator.toBigInteger()
+    )
+
+    private val numerator = if (denominator.signum() == -1) {
+        -numerator
+    } else {
+        numerator
+    }
     private val denominator = denominator.abs()
-
     private val cachedGcd: BigInteger by lazy { this.numerator.gcd(this.denominator) }
 
     companion object {
-        /**
-         * Factory method to create fractions from strings in "base#number" format.
-         */
         @JvmStatic
         fun valueOf(string: String): Fraction {
-            val (base, number) =
-                (Parsers.ALL.values.map { it -> it(string) }.firstOrNull { it is Success }
-                    ?: throw IllegalArgumentException("No valid parsers for $string")) as Success
-            return valueOf(number, base.radix)
-        }
-
-        /**
-         * Factory method to create fractions from number representation and radix.
-         */
-        @JvmStatic
-        fun valueOf(string: String, radix: Int): Fraction {
-            val partitions = string.replace("_", "").split('.')
-            val(scale, unscaled) =
-                when(partitions.size) {
-                    1 -> Pair(0, partitions[0])
-                    2 -> Pair(partitions[1].length, partitions.joinToString(""))
-                    else -> throw IllegalArgumentException("Cannot have more than 1 dot in number string $string")
-                }
-            return Fraction(BigInteger(unscaled, radix), BigInteger.valueOf(radix.toLong()).pow(scale))
+            val partitions = string.split('/')
+            return Fraction(BigInteger(partitions.first()), BigInteger(partitions.last()))
         }
     }
 
-    /**
-     * Reduce the fraction to the normalized version.
-     */
     fun normalize(): Fraction {
         return Fraction(numerator / cachedGcd, denominator / cachedGcd)
     }
 
-    /**
-     * Get the inverse of this fraction such that this * this.inverse() = 1
-     */
     fun inverse(): Fraction {
         return Fraction(denominator, numerator)
     }
 
-    /**
-     * Round up this fraction.
-     */
     fun ceil(): Fraction {
-        return Fraction( denominator * ((numerator / denominator) + BigInteger.ONE), denominator)
+        return Fraction(denominator * ((numerator / denominator) + BigInteger.ONE), denominator)
     }
 
-    /**
-     * Round down this fraction.
-     */
     fun floor(): Fraction {
-        return Fraction( denominator * (numerator / denominator), denominator)
+        return Fraction(denominator * (numerator / denominator), denominator)
     }
 
     override fun equals(other: Any?): Boolean {
-        return when(other) {
+        return when (other) {
             null -> false
             is String -> this == valueOf(other)
             is Fraction -> {
@@ -89,10 +66,6 @@ class Fraction(numerator: BigInteger, denominator: BigInteger): Number(), Compar
 
     override fun toString(): String {
         return "$numerator/$denominator"
-    }
-
-    fun toString(radix: Int): String {
-        return "$radix#${numerator.toString(radix)}/$radix#${denominator.toString(radix)}"
     }
 
     operator fun plus(other: Fraction): Fraction {
@@ -129,34 +102,6 @@ class Fraction(numerator: BigInteger, denominator: BigInteger): Number(), Compar
         return this - tmp
     }
 
-    override fun toDouble(): Double {
-        return cachedDecimal.toDouble()
-    }
-
-    override fun toFloat(): Float {
-        return cachedDecimal.toFloat()
-    }
-
-    override fun toInt(): Int {
-        return cachedDecimal.toInt()
-    }
-
-    override fun toLong(): Long {
-        return cachedDecimal.toLong()
-    }
-
-    override fun toShort(): Short {
-        return cachedDecimal.toShort()
-    }
-
-    override fun toByte(): Byte {
-        return toInt().toByte()
-    }
-
-    override fun toChar(): Char {
-        return toInt().toChar()
-    }
-
     override fun compareTo(other: Fraction): Int {
         val nod = numerator.multiply(other.denominator)
         val don = denominator.multiply(other.numerator)
@@ -173,9 +118,11 @@ class Fraction(numerator: BigInteger, denominator: BigInteger): Number(), Compar
         return (denominator * other.denominator).abs() / gcd
     }
 
+    fun toInt() = (numerator / denominator).toInt()
+
 }
 
 fun main() {
     val f = Fraction(5, 7)
-    println(f)
+    println((f * f - f + f.inverse()).normalize())
 }
