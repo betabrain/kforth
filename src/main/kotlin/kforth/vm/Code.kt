@@ -1,3 +1,5 @@
 package kforth.vm
 
-class Code
+import java.math.BigInteger
+
+typealias Code = List<BigInteger>
