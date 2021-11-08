@@ -99,6 +99,14 @@ class Alpha {
     eval(": rot >r swap r> swap ;")
     eval(": -rot swap >r swap r> ;")
     eval(": tuck swap over ;")
+    eval(": @r r> dup >r ;")
+
+    // Todo
+    // eval(": 2swap not-implemented ;")
+    // eval(": 2over not-implemented ;")
+    // eval(": pick not-implemented ;")
+    // eval(": roll not-implemented ;")
+
 
     // Math
     builtin("base!") { base = stack.removeLast() }
@@ -107,6 +115,7 @@ class Alpha {
     builtin("-") { val top = stack.removeLast(); stack.add(stack.removeLast() - top) }
     builtin("*") { stack.add(stack.removeLast() * stack.removeLast()) }
     builtin("/") { val top = stack.removeLast(); stack.add(stack.removeLast() / top) }
+    builtin("mod") { val top = stack.removeLast(); stack.add(stack.removeLast() % top) }
     eval(": oct 8 base! ;")
     eval(": dec 10 base! ;")
     eval(": hex 16 base! ;")
