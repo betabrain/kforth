@@ -9,6 +9,8 @@ This is because the instruction set aims to contain less than 36 instructions.
 
 ## Instructions
 
+### Core
+
 | Code Hex | Base 36 | Name    | Args | Stack | Meaning |
 | -------- | ------- | ------- | ---- | ----- | ------- |
 | 0x00     | 0       | HALT    | 0    |       | Stop VM |
@@ -31,6 +33,11 @@ This is because the instruction set aims to contain less than 36 instructions.
 | 0x11     | H       | DENOM   | 0    | -1 +1 | Push the denominator | 
 | 0x12     | I       | NORM    | 0    | -1 +1 | Normalize TOS | 
 | 0x13     | J       | GT      | 0    | -2 +1 | Push result of greater comparison |
+
+### Support for Tables
+
+| Code Hex | Base 36 | Name    | Args | Stack | Meaning |
+| -------- | ------- | ------- | ---- | ----- | ------- |
 | 0x14     | K       | NEW     | 0    | +1    | Push an empty table |
 | 0x15     | L       | ADDL    | 0    | -2 +1 | Add value to left of table |
 | 0x16     | M       | POPL    | 0    | -1 +1 | Pop value from the left of table |
@@ -41,6 +48,11 @@ This is because the instruction set aims to contain less than 36 instructions.
 | 0x1B     | R       | FIRST   | 0    | -1 +1 | Set first key from table |
 | 0x1C     | S       | NEXT    | 0    | -2 +1 | Get next key for table and key |
 | 0x1D     | T       | LAST    | 0    | -1 +1 | Get last key from table |
+
+### Extensions
+
+| Code Hex | Base 36 | Name    | Args | Stack | Meaning |
+| -------- | ------- | ------- | ---- | ----- | ------- |
 | 0x1E     | U       | RES     | 0    |       | Reserved |
 | 0x1F     | V       | RES     | 0    |       | Reserved |
 | 0x20     | W       | RES     | 0    |       | Reserved |
