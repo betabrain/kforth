@@ -12,8 +12,9 @@ fun main() {
     val vm = Vm()
     vm.run(code)
     vm.run(code)
-    vm.run(listOf(5.toBigInteger(), BigInteger.ZERO))
+    vm.run(listOf(5.toBigInteger(), BigInteger.ZERO, BigInteger.ZERO))
 
+    vm.step()
     vm.step()
     vm.step()
 }
