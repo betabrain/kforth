@@ -33,10 +33,15 @@ class Beta {
         //| 0x06     | 6       | STORE   | 1    | -1    | Store TOS into a local variable |
         0x06 -> { returnStack.last().locals[code(1)] = dataStack.removeLast(); incrIp(2) }
         //| 0x07     | 7       | GOTO    | 1    |       | Jump to location |
+        0x07 -> { returnStack.last().ip = code(1) }
         //| 0x08     | 8       | BRANCH? | 1    |       | Jump if TOS is positive |
+        0x08 -> { if (dataStack.last() > 0) { returnStack.last().ip = code(1) } else { incrIp(2) } }
         //| 0x09     | 9       | STATIC  | 1    |       | Call location |
+        0x09 -> { returnStack.add(returnStack.last().copy()); returnStack.last().ip = code(1) }
         //| 0x0A     | A       | DYNAMIC | 0    | -1    | Call TOS |
+        0x0A -> { returnStack.add(returnStack.last().copy()); returnStack.last().ip = dataStack.removeLast() }
         //| 0x0B     | B       | RETURN  | 0    |       | Pop return stack |
+        0x0B -> { returnStack.removeLast() }
         //| 0x0C     | C       | PLUS    | 0    | -2 +1 | Sum two values |
         //| 0x0D     | D       | NEGATE  | 0    | -1 +1 | Negate the sign of a value |
         //| 0x0E     | E       | TIMES   | 0    | -2 +1 | Multiply two values |
