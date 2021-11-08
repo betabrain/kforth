@@ -60,22 +60,4 @@ class Beta {
 
 fun main() {
   val test = Beta()
-  test.execute(0)
-  test.execute(1, 2, 0)
-  test.execute(
-    // value 5
-    10, 5,
-    // dup
-    11,
-    // branch? 9
-    2, 10,
-    // value 1
-    10, 1,
-    // minus
-    20,
-    // goto
-    1, 2,
-    //halt
-    0
-  )
 }
