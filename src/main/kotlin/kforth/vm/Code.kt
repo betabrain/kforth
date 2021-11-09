@@ -9,5 +9,8 @@ class Code(private val byteCode: List<BigInteger>) {
 
     fun value(ip: Int): BigInteger = byteCode[ip]
 
-    override fun toString(): String = byteCode.joinToString { it.toString() }
+    override fun toString(): String =
+        byteCode
+            .joinToString("+") { it.toString(36) }
+            .replace("+-", "-")
 }
