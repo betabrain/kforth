@@ -3,23 +3,28 @@ package kforth.vm
 import java.math.BigInteger
 
 class Vm {
-    private var nextThreadId = 0
-    private val threads: MutableMap<Int, VmThread> = mutableMapOf()
-    private val running: MutableList<Int> = mutableListOf()
-    private val stopping: MutableList<Int> = mutableListOf()
+    private var nextThreadId = BigInteger.ZERO
+    private val threads: MutableMap<BigInteger, VmThread> = mutableMapOf()
+    private val running: MutableList<BigInteger> = mutableListOf()
+    private val stopping: MutableList<BigInteger> = mutableListOf()
 
-    fun send(recipient: Int, value: BigInteger) {
+    fun send(recipient: BigInteger, value: BigInteger) {
         threads[recipient]?.message(value)
     }
 
-    fun broadcast(sender: Int, value: BigInteger) {
+    fun broadcast(sender: BigInteger, value: BigInteger) {
         running.filter { it != sender }.forEach { threads[it]?.message(value) }
     }
 
-    fun run(code: Code, steps: Int = 50) {
-        threads[nextThreadId] = VmThread(this, nextThreadId, code, steps)
-        running.add(nextThreadId)
-        nextThreadId += 1
+    fun run(code: Code, id: BigInteger? = null, steps: Int = 50): BigInteger {
+        val tid = if (id == null) {
+            nextThreadId += BigInteger.ONE; nextThreadId
+        } else {
+            id
+        }
+        threads[tid] = VmThread(this, tid, code, steps)
+        running.add(tid)
+        return tid
     }
 
     fun step() {
@@ -29,5 +34,5 @@ class Vm {
         stopping.clear()
     }
 
-    fun stop(thread: Int) = stopping.add(thread)
+    fun stop(thread: BigInteger) = stopping.add(thread)
 }

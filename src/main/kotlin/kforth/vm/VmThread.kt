@@ -4,7 +4,7 @@ import java.math.BigInteger
 
 class VmThread(
     private val vm: Vm,
-    private val id: Int,
+    private val id: BigInteger,
     private val code: Code,
     private val steps: Int = 100
 ) {
@@ -92,7 +92,7 @@ class VmThread(
                 }
                 Asm.SEND -> {
                     val msg = dataStack.removeLast()
-                    vm.send(dataStack.removeLast().toInt(), msg)
+                    vm.send(dataStack.removeLast(), msg)
                     ip += 1
                 }
                 Asm.BROADCAST -> {

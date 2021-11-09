@@ -12,6 +12,11 @@ class Code {
         return this
     }
 
+    fun add(code: BigInteger): Code {
+        byteCode.add(code)
+        return this
+    }
+
     fun label(name: String): Code {
         labels[name] = byteCode.size
         return this

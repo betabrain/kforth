@@ -3,12 +3,13 @@ package kforth
 import kforth.vm.Asm
 import kforth.vm.Code
 import kforth.vm.Vm
+import java.math.BigInteger
 
 fun main() {
     val code1 = Code()
 
     code1
-        .add(Asm.CONST, 9)
+        .add(Asm.READ)
         .label("loop")
         .add(Asm.BROADCAST)
         .add(Asm.READ)
@@ -30,10 +31,18 @@ fun main() {
 
     println(code2)
 
+    val code3 = Code()
+        .add(Asm.CONST)
+        .add(BigInteger("MAIN", 36))
+        .add(Asm.CONST, 5)
+        .add(Asm.SEND)
+
+    println(code3)
 
     val vm = Vm()
-    vm.run(code1)
-    vm.run(code2)
+    vm.run(code1, id = BigInteger("MAIN", 36))
+    vm.run(code2, id = BigInteger("ECHO", 36))
+    vm.run(code3)
 
     vm.step()
     vm.step()
