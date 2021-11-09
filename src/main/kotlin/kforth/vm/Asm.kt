@@ -12,6 +12,7 @@ enum class Asm {
     STA,
     LDB,
     STB,
+    SPAWN,
     READ,
     SEND,
     BROADCAST,

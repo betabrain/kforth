@@ -6,10 +6,10 @@ class VmThread(
     private val vm: Vm,
     private val id: BigInteger,
     private val code: Code,
-    private val steps: Int = 100
+    private var ip: Int = 0,
+    private val steps: Int = 100,
 ) {
     // control flow
-    private var ip: Int = 0
     private val returnStack = mutableListOf<Frame>()
 
     // locals & constants
@@ -81,6 +81,10 @@ class VmThread(
                 Asm.STB -> {
                     b = dataStack.removeLast()
                     ip += 1
+                }
+                Asm.SPAWN -> {
+                    dataStack.add(vm.run(code, code.address(ip + 1)))
+                    ip += 2
                 }
                 Asm.READ -> {
                     if (mbox.isNotEmpty()) {

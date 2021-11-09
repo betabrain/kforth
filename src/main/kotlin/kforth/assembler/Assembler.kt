@@ -41,6 +41,7 @@ class Assembler {
     fun sta(): Assembler = add(Asm.STA)
     fun ldb(): Assembler = add(Asm.LDB)
     fun stb(): Assembler = add(Asm.STB)
+    fun spawn(to: String): Assembler = add(Asm.SPAWN, Value.Hole(to))
     fun read(): Assembler = add(Asm.READ)
     fun send(): Assembler = add(Asm.SEND)
     fun broadcast(): Assembler = add(Asm.BROADCAST)
