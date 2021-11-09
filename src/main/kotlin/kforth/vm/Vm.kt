@@ -9,8 +9,12 @@ class Vm {
     private val stopping: MutableList<BigInteger> = mutableListOf()
     var debug = false
 
-    fun send(recipient: BigInteger, value: BigInteger) {
-        threads[recipient]?.message(value)
+    fun send(sender: BigInteger, recipient: BigInteger, value: BigInteger) {
+        if (recipient == BigInteger.ZERO) {
+            println("message: $sender $value")
+        } else {
+            threads[recipient]?.message(value)
+        }
     }
 
     fun broadcast(sender: BigInteger, value: BigInteger) {
@@ -33,6 +37,9 @@ class Vm {
         running.forEach { threads[it]?.run() }
         running.removeAll(stopping)
         stopping.clear()
+
+        println("running: " + running.joinToString())
+        println()
     }
 
     fun stop(thread: BigInteger) = stopping.add(thread)

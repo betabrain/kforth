@@ -10,7 +10,7 @@ class VmThread(
 ) {
     // control flow
     private var ip: Int = 0
-    private val returnStack = mutableListOf<BigInteger>()
+    private val returnStack = mutableListOf<Frame>()
 
     // locals & constants
     private val dataStack = mutableListOf<BigInteger>()
@@ -21,7 +21,7 @@ class VmThread(
     private val mbox = mutableListOf<BigInteger>()
     fun message(value: BigInteger) = mbox.add(value)
 
-    fun run() {
+    fun run(): Int {
         var count = 0
         while (count < steps) {
             count += 1
@@ -32,7 +32,7 @@ class VmThread(
                 null -> {
                     vm.stop(id)
                     ip = -1
-                    return
+                    return count
                 }
                 Asm.JMP -> {
                     ip = code.address(ip + 1)
@@ -45,15 +45,14 @@ class VmThread(
                     }
                 }
                 Asm.CALL -> {
-                    returnStack.add((ip + 2).toBigInteger())
-                    returnStack.add(a)
-                    returnStack.add(b)
+                    returnStack.add(Frame((ip + 2), a, b))
                     ip = code.address(ip + 1)
                 }
                 Asm.RET -> {
-                    b = returnStack.removeLast()
-                    a = returnStack.removeLast()
-                    ip = returnStack.removeLast().toInt()
+                    val frame = returnStack.removeLast()
+                    ip = frame.ip
+                    a = frame.a
+                    b = frame.b
                 }
                 Asm.CONST -> {
                     dataStack.add(code.value(ip + 1))
@@ -88,12 +87,12 @@ class VmThread(
                         dataStack.add(mbox.removeFirst())
                         ip += 1
                     } else {
-                        return
+                        return count
                     }
                 }
                 Asm.SEND -> {
                     val msg = dataStack.removeLast()
-                    vm.send(dataStack.removeLast(), msg)
+                    vm.send(id, dataStack.removeLast(), msg)
                     ip += 1
                 }
                 Asm.BROADCAST -> {
@@ -104,7 +103,21 @@ class VmThread(
                     dataStack.add(dataStack.removeLast() + dataStack.removeLast())
                     ip += 1
                 }
+                Asm.NEGATE -> {
+                    dataStack.add(-dataStack.removeLast())
+                    ip += 1
+                }
+                Asm.MULTIPLY -> {
+                    dataStack.add(dataStack.removeLast() * dataStack.removeLast())
+                    ip += 1
+                }
+                Asm.MODULO -> {
+                    val tmp = dataStack.removeLast()
+                    dataStack.add(dataStack.removeLast().mod(tmp))
+                    ip += 1
+                }
             }
         }
+        return count
     }
 }

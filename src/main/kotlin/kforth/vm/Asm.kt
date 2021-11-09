@@ -16,5 +16,8 @@ enum class Asm {
     SEND,
     BROADCAST,
     ADD,
+    NEGATE,
+    MULTIPLY,
+    MODULO,
     ;
 }

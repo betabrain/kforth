@@ -45,4 +45,7 @@ class Assembler {
     fun send(): Assembler = add(Asm.SEND)
     fun broadcast(): Assembler = add(Asm.BROADCAST)
     fun add(): Assembler = add(Asm.ADD)
+    fun negate(): Assembler = add(Asm.NEGATE)
+    fun multiply(): Assembler = add(Asm.MULTIPLY)
+    fun modulo(): Assembler = add(Asm.MODULO)
 }
