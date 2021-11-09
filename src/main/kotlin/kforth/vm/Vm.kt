@@ -12,8 +12,8 @@ class Vm {
         threads[recipient]?.message(value)
     }
 
-    fun broadcast(value: BigInteger) {
-        running.forEach { threads[it]?.message(value) }
+    fun broadcast(sender: Int, value: BigInteger) {
+        running.filter { it != sender }.forEach { threads[it]?.message(value) }
     }
 
     fun run(code: Code, steps: Int = 25) {

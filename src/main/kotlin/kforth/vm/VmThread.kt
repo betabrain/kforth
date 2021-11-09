@@ -86,14 +86,18 @@ class VmThread(
                     if (mbox.isNotEmpty()) {
                         dataStack.add(mbox.removeFirst())
                         ip += 1
+                    } else {
+                        return
                     }
                 }
                 Asm.SEND -> {
                     val msg = dataStack.removeLast()
                     vm.send(dataStack.removeLast().toInt(), msg)
+                    ip += 1
                 }
                 Asm.BROADCAST -> {
-                    vm.broadcast(dataStack.removeLast())
+                    vm.broadcast(id, dataStack.removeLast())
+                    ip += 1
                 }
                 Asm.ADD -> {
                     dataStack.add(dataStack.removeLast() + dataStack.removeLast())
