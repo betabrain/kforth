@@ -2,66 +2,104 @@ package kforth.vm
 
 import java.math.BigInteger
 
-class VmThread(private val vm: Vm, private val code: Code) {
+class VmThread(
+    private val vm: Vm,
+    private val id: Int,
+    private val code: Code,
+    private val steps: Int = 100
+) {
     // control flow
     private var ip: Int = 0
     private val returnStack = mutableListOf<BigInteger>()
-    private fun halt() { vm.stop(this) }
-    private fun jmp(next: Int) { ip = next }
-    private fun zjp(next: Int) { ip = if (dataStack.removeLast() == BigInteger.ZERO) { next } else { ip + 1 } }
-    private fun call(next: Int) {
-        returnStack.add(ip.toBigInteger())
-        returnStack.add(a)
-        returnStack.add(b)
-        ip = next
-    }
-    private fun ret() {
-        b = returnStack.removeLast()
-        a = returnStack.removeLast()
-        ip = returnStack.removeLast().toInt()
-    }
 
     // locals & constants
     private val dataStack = mutableListOf<BigInteger>()
     private var a = BigInteger.ZERO
     private var b = BigInteger.ZERO
-    private fun const(value: BigInteger) { dataStack.add(value); ip += 2 }
-    private fun lda() { dataStack.add(a); ip += 1 }
-    private fun sta() { a = dataStack.removeLast(); ip += 1 }
-    private fun ldb() { dataStack.add(b); ip += 1 }
-    private fun stb() { b = dataStack.removeLast(); ip += 1 }
 
     // ipc
     private val mbox = mutableListOf<BigInteger>()
-    fun send(value: BigInteger) = mbox.add(value)
-    private fun read() {
-        if (mbox.isNotEmpty()) {
-            dataStack.add(mbox.removeFirst())
-            ip += 1
-        }
-    }
-    private fun bcast() { vm.bcast(dataStack.removeLast()) }
+    fun message(value: BigInteger) = mbox.add(value)
 
-    // numbers
-    private fun add() { dataStack.add(dataStack.removeLast() + dataStack.removeLast()); ip += 1 }
-
-    fun step() {
-        println("[$this] step: ip=$ip a=$a b=$b stack=$dataStack --  ${code[ip]}")
-        when (code[ip].toInt()) {
-            0 -> halt()
-            1 -> jmp(code[ip + 1].toInt())
-            2 -> zjp(code[ip + 1].toInt())
-            3 -> call(code[ip + 1].toInt())
-            4 -> ret()
-            5 -> const(code[ip + 1])
-            6 -> lda()
-            7 -> sta()
-            8 -> ldb()
-            9 -> stb()
-            10 -> read()
-            11 -> bcast()
-            12 -> add()
-            else -> TODO()
+    fun run() {
+        var count = 0
+        while (count < steps) {
+            count += 1
+            val instruction = code.op(ip)
+            println("[$id] $count/$steps: ip=$ip a=$a b=$b stack=$dataStack rstack=$returnStack  --  $instruction")
+            when (instruction) {
+                null -> {
+                    vm.stop(id)
+                    ip = -1
+                    return
+                }
+                Asm.JMP -> {
+                    ip = code.address(ip + 1)
+                }
+                Asm.ZJP -> {
+                    ip = if (dataStack.removeLast() == BigInteger.ZERO) {
+                        code.address(ip + 1)
+                    } else {
+                        ip + 1
+                    }
+                }
+                Asm.CALL -> {
+                    returnStack.add(ip.toBigInteger())
+                    returnStack.add(a)
+                    returnStack.add(b)
+                    ip = code.address(ip + 1)
+                }
+                Asm.RET -> {
+                    b = returnStack.removeLast()
+                    a = returnStack.removeLast()
+                    ip = returnStack.removeLast().toInt()
+                }
+                Asm.CONST -> {
+                    dataStack.add(code.value(ip + 1))
+                    ip += 2
+                }
+                Asm.DUP -> {
+                    dataStack.add(dataStack.last())
+                    ip += 1
+                }
+                Asm.DROP -> {
+                    dataStack.removeLast()
+                    ip += 1
+                }
+                Asm.LDA -> {
+                    dataStack.add(a)
+                    ip += 1
+                }
+                Asm.STA -> {
+                    a = dataStack.removeLast()
+                    ip += 1
+                }
+                Asm.LDB -> {
+                    dataStack.add(b)
+                    ip += 1
+                }
+                Asm.STB -> {
+                    b = dataStack.removeLast()
+                    ip += 1
+                }
+                Asm.READ -> {
+                    if (mbox.isNotEmpty()) {
+                        dataStack.add(mbox.removeFirst())
+                        ip += 1
+                    }
+                }
+                Asm.SEND -> {
+                    val msg = dataStack.removeLast()
+                    vm.send(dataStack.removeLast().toInt(), msg)
+                }
+                Asm.BROADCAST -> {
+                    vm.broadcast(dataStack.removeLast())
+                }
+                Asm.ADD -> {
+                    dataStack.add(dataStack.removeLast() + dataStack.removeLast())
+                    ip += 1
+                }
+            }
         }
     }
 }

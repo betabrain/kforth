@@ -3,23 +3,31 @@ package kforth.vm
 import java.math.BigInteger
 
 class Vm {
-    private val running: MutableList<VmThread> = mutableListOf()
-    private val stopping: MutableList<VmThread> = mutableListOf()
+    private var nextThreadId = 0
+    private val threads: MutableMap<Int, VmThread> = mutableMapOf()
+    private val running: MutableList<Int> = mutableListOf()
+    private val stopping: MutableList<Int> = mutableListOf()
 
-    fun bcast(value: BigInteger) {
-        running.forEach { it.send(value) }
+    fun send(recipient: Int, value: BigInteger) {
+        threads[recipient]?.message(value)
     }
 
-    fun run(code: Code) {
-        running.add(VmThread(this, code))
+    fun broadcast(value: BigInteger) {
+        running.forEach { threads[it]?.message(value) }
+    }
+
+    fun run(code: Code, steps: Int = 25) {
+        threads[nextThreadId] = VmThread(this, nextThreadId, code, steps)
+        running.add(nextThreadId)
+        nextThreadId += 1
     }
 
     fun step() {
         println("-- vm step")
-        running.forEach { it.step() }
+        running.forEach { threads[it]?.run() }
         running.removeAll(stopping)
         stopping.clear()
     }
 
-    fun stop(thread: VmThread) = stopping.add(thread)
+    fun stop(thread: Int) = stopping.add(thread)
 }
