@@ -8,12 +8,13 @@ fun main() {
     val code1 = Code()
 
     code1
-        .add(Asm.CONST, 555)
+        .add(Asm.CONST, 9)
         .label("loop")
         .add(Asm.BROADCAST)
         .add(Asm.READ)
         .add(Asm.CONST, -1)
         .add(Asm.ADD)
+        .add(Asm.DUP)
         .add(Asm.ZJP, -1)
         .add(Asm.JMP, code1.resolve("loop"))
 
@@ -38,4 +39,16 @@ fun main() {
     vm.step()
     vm.step()
     vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
+
 }

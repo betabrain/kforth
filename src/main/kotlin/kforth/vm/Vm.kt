@@ -16,7 +16,7 @@ class Vm {
         running.filter { it != sender }.forEach { threads[it]?.message(value) }
     }
 
-    fun run(code: Code, steps: Int = 25) {
+    fun run(code: Code, steps: Int = 50) {
         threads[nextThreadId] = VmThread(this, nextThreadId, code, steps)
         running.add(nextThreadId)
         nextThreadId += 1

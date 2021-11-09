@@ -40,7 +40,7 @@ class VmThread(
                     ip = if (dataStack.removeLast() == BigInteger.ZERO) {
                         code.address(ip + 1)
                     } else {
-                        ip + 1
+                        ip + 2
                     }
                 }
                 Asm.CALL -> {
