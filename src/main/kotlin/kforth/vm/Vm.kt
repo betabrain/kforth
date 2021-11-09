@@ -7,6 +7,7 @@ class Vm {
     private val threads: MutableMap<BigInteger, VmThread> = mutableMapOf()
     private val running: MutableList<BigInteger> = mutableListOf()
     private val stopping: MutableList<BigInteger> = mutableListOf()
+    var debug = false
 
     fun send(recipient: BigInteger, value: BigInteger) {
         threads[recipient]?.message(value)

@@ -26,7 +26,8 @@ class VmThread(
         while (count < steps) {
             count += 1
             val instruction = code.op(ip)
-            println("[$id] $count/$steps: ip=$ip a=$a b=$b stack=$dataStack rstack=$returnStack  --  $instruction")
+            if (vm.debug)
+                println("[$id] $count/$steps: ip=$ip a=$a b=$b stack=$dataStack rstack=$returnStack  --  $instruction")
             when (instruction) {
                 null -> {
                     vm.stop(id)
@@ -44,7 +45,7 @@ class VmThread(
                     }
                 }
                 Asm.CALL -> {
-                    returnStack.add(ip.toBigInteger())
+                    returnStack.add((ip + 2).toBigInteger())
                     returnStack.add(a)
                     returnStack.add(b)
                     ip = code.address(ip + 1)

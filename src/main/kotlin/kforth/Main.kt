@@ -1,61 +1,62 @@
 package kforth
 
-import kforth.vm.Asm
-import kforth.vm.Code
+import kforth.assembler.Assembler
 import kforth.vm.Vm
 import java.math.BigInteger
 
 fun main() {
-    val code1 = Code()
-
-    code1
-        .add(Asm.READ)
+    val code1 = Assembler()
+        .read()
         .label("loop")
-        .add(Asm.BROADCAST)
-        .add(Asm.READ)
-        .add(Asm.CONST, -1)
-        .add(Asm.ADD)
-        .add(Asm.DUP)
-        .add(Asm.ZJP, -1)
-        .add(Asm.JMP, code1.resolve("loop"))
-
+        .broadcast()
+        .read()
+        .const(-1)
+        .add()
+        .dup()
+        .zjp("_stop")
+        .jmp("loop")
+        .assemble()
     println(code1)
 
-    val code2 = Code()
-
-    code2
-        .label("loop")
-        .add(Asm.READ)
-        .add(Asm.BROADCAST)
-        .add(Asm.JMP, code2.resolve("loop"))
-
+    val code2 = Assembler()
+        .read()
+        .broadcast()
+        .jmp("_start")
+        .assemble()
     println(code2)
 
-    val code3 = Code()
-        .add(Asm.CONST)
-        .add(BigInteger("MAIN", 36))
-        .add(Asm.CONST, 5)
-        .add(Asm.SEND)
-
+    val code3 = Assembler()
+        .jmp("main")
+        .label("countdown")
+        .dup()
+        .zjp("countdown.end")
+        .const(-1)
+        .add()
+        .call("countdown")
+        .label("countdown.end")
+        .ret()
+        .label("add-one")
+        .const(1)
+        .add()
+        .ret()
+        .label("add-two")
+        .const(2)
+        .add()
+        .ret()
+        .label("main")
+        .const(0)
+        .call("add-two")
+        .call("add-one")
+        .call("countdown")
+        .drop()
+        .assemble()
     println(code3)
 
-    val code4 = Code()
-
-    code4
-        .add(Asm.CONST, 5)
-        .label("func")
-        .add(Asm.CONST, -1)
-        .add(Asm.ADD)
-        .add(Asm.DUP)
-        .add(Asm.ZJP, -1)
-        .add(Asm.CALL, code4.resolve("func"))
-
-
     val vm = Vm()
+    vm.debug = true
     vm.run(code1, id = BigInteger("MAIN", 36))
     vm.run(code2, id = BigInteger("ECHO", 36))
     vm.run(code3)
-    vm.run(code4)
 
     vm.step()
     vm.step()
@@ -63,6 +64,7 @@ fun main() {
     vm.step()
     vm.step()
     vm.step()
+    vm.send(BigInteger("MAIN", 36), BigInteger.TEN)
     vm.step()
     vm.step()
     vm.step()
