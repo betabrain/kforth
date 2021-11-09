@@ -39,10 +39,23 @@ fun main() {
 
     println(code3)
 
+    val code4 = Code()
+
+    code4
+        .add(Asm.CONST, 5)
+        .label("func")
+        .add(Asm.CONST, -1)
+        .add(Asm.ADD)
+        .add(Asm.DUP)
+        .add(Asm.ZJP, -1)
+        .add(Asm.CALL, code4.resolve("func"))
+
+
     val vm = Vm()
     vm.run(code1, id = BigInteger("MAIN", 36))
     vm.run(code2, id = BigInteger("ECHO", 36))
     vm.run(code3)
+    vm.run(code4)
 
     vm.step()
     vm.step()
@@ -59,5 +72,8 @@ fun main() {
     vm.step()
     vm.step()
     vm.step()
-
+    vm.step()
+    vm.step()
+    vm.step()
+    vm.step()
 }
