@@ -1,6 +1,7 @@
 package kforth
 
 import kforth.assembler.Assembler
+import kforth.misc.MiscAssembler
 import kforth.vm.Vm
 import java.math.BigInteger
 
@@ -161,4 +162,22 @@ fun main() {
     vm.step()
     vm.step()
     vm.step()
+
+    val misc = MiscAssembler()
+        .target("_start")
+        .spc()
+        .label("_start")
+        .const(5)
+        .label("_loop")
+        .const(-1)
+        .add()
+        .dup()
+        .target("_end")
+        .target("_loop")
+        .select()
+        .spc()
+        .label("_end")
+        .drop()
+
+    println(misc)
 }
