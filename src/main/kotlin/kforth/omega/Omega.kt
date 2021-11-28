@@ -1,5 +1,10 @@
 package kforth.omega
 
+sealed interface Value {
+  data class Block(val code: MutableList<Int> = mutableListOf()) : Value
+  data class Number(val value: Int) : Value
+}
+
 interface Word {
   val name: String
   val token: Int
@@ -59,13 +64,18 @@ data class ColonWord(
 
 class Omega {
   private val idioms = mutableListOf<String>()
-  val dictionary = mutableListOf<Word>()
+  private val dictionary = mutableListOf<Word>()
+
   val stack = mutableListOf<Int>()
   var compiling = false
 
   init {
     // data types
     dictionary.add(Number)
+
+    // visibility
+    native(".c") { println(compiling) }
+    native(".s") { println(stack) }
 
     // math
     native("+") { stack.add(stack.removeLast() + stack.removeLast()) }
@@ -74,12 +84,14 @@ class Omega {
     native("/") { val tmp = stack.removeLast(); stack.add(stack.removeLast() / tmp) }
 
     // stack
+    native("drop") { stack.removeLast() }
     native("dup") { stack.add(stack.last()) }
     native("swap") { stack.add(stack.size - 2, stack.removeLast()) }
 
     // definitions
     native(":") { dictionary.add(ColonWord(nextIdiom(), dictionary.size)); compiling = true }
     immediate(";") { compiling = false }
+    native("'") { stack.add(lookup(nextIdiom())!!.token) }
   }
 
   private fun native(name: String, block: Omega.() -> Unit) {
@@ -135,7 +147,7 @@ class Omega {
   private fun nextIdiom(): String {
     while (idioms.isEmpty()) {
       print("> ")
-      readLine()?.split(Regex("\\s+"))?.apply { idioms.addAll(this) }
+      readLine()?.split(Regex("\\s+"))?.apply { idioms.addAll(this.map { it.trim() }.filter { it.isNotEmpty() }) }
     }
     return idioms.removeFirst()
   }
