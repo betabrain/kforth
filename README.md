@@ -1,8 +1,16 @@
 # kforth
-A variant of the Forth Programming Language implemented in Kotlin
+A variant of the Forth Programming Language implemented in Kotlin...
+Actually mainly a collection of experiments that hopefully become a language in the future.
 
 ## Aims
 Learn about Forth and Forth programming by tinkering with my own implementation of it.
+
+- Forth aims at reducing the development effort by 90% to 99%
+- Code like you write slides
+- Factoring: throwing away everything that isn't justified
+- Write vocabularies not programs
+- 100 words to describe the problem, one line to solve it
+- everyone out there develops the general solution, but nobody has the general problem
 
 ## Todos
 - [ ] Flexible output mechanism
